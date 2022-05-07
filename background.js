@@ -2,6 +2,9 @@ function toggleDebugStylesheet() {
   var path = 'turbo-frame/debug.css'
   var href = chrome.runtime.getURL(path)
   var linkElement = document.querySelectorAll('link[href="' + href + '"]')[0]
+  var turboFrames = document.querySelectorAll('turbo-frame')
+
+  if (!turboFrames.length) return
 
   if (linkElement) {
     linkElement.remove()
