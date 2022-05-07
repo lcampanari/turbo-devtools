@@ -1,6 +1,6 @@
 {
   "name": "Turbo devtools",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Easily locate turbo-frames with this simple developer tools for Turbo Frames",
   "manifest_version": 3,
   "icons": {
