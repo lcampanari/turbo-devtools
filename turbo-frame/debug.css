@@ -1,18 +1,29 @@
-turbo-frame {
-  border: 1px red solid;
+turbo-frame, a[data-turbo-frame] {
+  border: 1px darkred solid;
   display: block;
 }
 
 turbo-frame::before {
-  content: "Frame: #" attr(id);
+  content: "#" attr(id);
+}
+
+a[data-turbo-frame]:hover:before {
+  content: "Link to #" attr(data-turbo-frame);
+  position: fixed;
+  top: 0;
+  right: 0;
+}
+
+turbo-frame::before, a[data-turbo-frame]::before {
   position: relative;
   top: -14px;
   right: -4px;
   display: inline-block;
-  color: red;
+  color: darkred;
   font-size: 12px;
   z-index: 9999;
   background-color: white;
   padding: 4px;
-  border: 1px red solid;
+  border: 1px darkred solid;
 }
+
