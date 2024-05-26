@@ -6,13 +6,13 @@ if (!window.turboFrameDebug) {
             this.debugStylesheetPath = 'turbo-frame/debug.css';
             this.enabled = false;
             this.handleTurboClick = this.handleTurboClick.bind(this);
-            this.handleTurboBeforeFetchResponse = this.handleTurboBeforeFetchResponse.bind(this);
+            this.handleTurboBeforePrefetch = this.handleTurboBeforePrefetch.bind(this);
+            this.handleTurboBeforeFetchRequest = this.handleTurboBeforeFetchRequest.bind(this);
             this.handleTurboBeforeStreamRender = this.handleTurboBeforeStreamRender.bind(this);
         }
 
         toggleDebug() {
             this.enabled = !this.enabled;
-            this.toggleDebugStylesheet();
             if (this.enabled) {
                 this.setupEventListeners();
             }
@@ -22,58 +22,40 @@ if (!window.turboFrameDebug) {
             }
         }
 
-        toggleDebugStylesheet() {
-            const href = chrome.runtime.getURL(this.debugStylesheetPath)
-            const linkElement = document.querySelectorAll('link[href="' + href + '"]')[0]
-            const turboFrames = document.querySelectorAll('turbo-frame')
-
-            if (!turboFrames.length) return
-
-            if (linkElement) {
-                linkElement.remove()
-            } else {
-                const head = document.getElementsByTagName('head')[0]
-                const link = document.createElement('link')
-                link.rel = 'stylesheet'
-                link.type = 'text/css'
-                link.href = chrome.runtime.getURL(this.debugStylesheetPath)
-                head.appendChild(link)
-            }
-        }
-
         setupEventListeners() {
-            document.addEventListener('turbo:click', this.handleTurboClick)
-            document.addEventListener('turbo:before-fetch-response', this.handleTurboBeforeFetchResponse)
+            document.addEventListener('turbo:click', this.handleTurboClick);
+            document.addEventListener('turbo:before-prefetch', this.handleTurboBeforePrefetch);
+            document.addEventListener('turbo:before-fetch-request', this.handleTurboBeforeFetchRequest);
             document.addEventListener('turbo:before-stream-render', this.handleTurboBeforeStreamRender);
         }
 
         removeEventListeners() {
-            document.removeEventListener('turbo:click', this.handleTurboClick)
-            document.removeEventListener('turbo:before-fetch-response', this.handleTurboBeforeFetchResponse)
+            document.removeEventListener('turbo:click', this.handleTurboClick);
+            document.removeEventListener('turbo:before-prefetch', this.handleTurboBeforePrefetch);
+            document.removeEventListener('turbo:before-fetch-request', this.handleTurboBeforeFetchRequest);
             document.removeEventListener('turbo:before-stream-render', this.handleTurboBeforeStreamRender);
         }
 
         handleTurboClick(event) {
             const frameId = this.getFrameId(event.target);
-
             console.log(`%c${event.target.innerText}`,
                 'font-weight: bold; text-decoration: underline;',
                 'click was intercepted by Turbo which will',
-                `replace the contents of #${frameId} with the contents of <turbo-frame id="${frameId}"></turbo-frame> returned from ${event.target.getAttribute('href')}`,
+                `replace the contents of #${frameId} with the contents of <turbo-frame id="${frameId}"></turbo-frame> returned from ${event.detail.url}`,
                 event)
 
         }
 
-        handleTurboBeforeFetchResponse(event) {
-            const frameId = event.target.id;
-            if (frameId) {
-                console.log(`Turbo is replacing the contents of #${event.target.id} with the contents of <turbo-frame id="${frameId}"></turbo-frame> returned from ${event.target.getAttribute('src')}`,
-                    event);
-            }
-            else {
-                console.log(`Turbo is replacing the contents of the ${event.target.localName} element`,
-                    event);
-            }
+        handleTurboBeforePrefetch(event) {
+            console.log(`%c${event.target.innerText}`,
+            'font-weight: bold; text-decoration: underline;',
+            'hover was intercepted by Turbo which will',
+            `prefetch.`,
+            event);
+        }
+
+        handleTurboBeforeFetchRequest(event) {
+            console.log(`Turbo is fetching ${event.detail.url}`, event);
         }
 
         handleTurboBeforeStreamRender(event) {

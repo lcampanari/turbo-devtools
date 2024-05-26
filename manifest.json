@@ -15,7 +15,7 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["turbo-frame/debug.css", "turbo-frame/debug.js"],
+      "resources": ["turbo-frame/debug.css", "turbo-frame/debug.js", "turbo-frame/init.js"],
       "matches": ["*://*/*"]
     }
   ]
