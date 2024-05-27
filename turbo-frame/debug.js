@@ -60,12 +60,16 @@ class TurboDebugLogger {
     }
 
     handleTurboLoad(event) {
+        const visitStart = event.detail.timing.visitStart ? new Date(event.detail.timing.visitStart).toISOString() : '';
+        const requestStart = event.detail.timing.requestStart ? new Date(event.detail.timing.requestStart).toISOString() : '';
+        const requestEnd = event.detail.timing.requestEnd ? new Date(event.detail.timing.requestEnd).toISOString() : '';
+        const visitEnd = event.detail.timing.visitEnd ? new Date(event.detail.timing.visitEnd).toISOString() : '';
         this.logMessage(event,
             `Loaded page from ${event.detail.url}.`,
-            `\nVisit start: ${new Date(event.detail.timing.visitStart).toISOString()}`,
-            `\nRequest start: ${new Date(event.detail.timing.requestStart).toISOString()}`,
-            `\nRequest end: ${new Date(event.detail.timing.requestEnd).toISOString()}`,
-            `\nVisit end: ${new Date(event.detail.timing.visitEnd).toISOString()}`,
+            `\nVisit start: ${visitStart}`,
+            `\nRequest start: ${requestStart}`,
+            `\nRequest end: ${requestEnd}`,
+            `\nVisit end: ${visitEnd}`
         );
     }
 
