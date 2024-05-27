@@ -1,10 +1,11 @@
-if (!window.turboFrameInit) {
 
+if (!window.turboFrameInit) {
     class TurboFrameInit {
         constructor() {
             this.debugStylesheetPath = 'turbo-frame/debug.css';
             this.debugJSPath = 'turbo-frame/debug.js';
             this.enabled = false;
+
         }
 
         toggleDebug() {
@@ -21,10 +22,7 @@ if (!window.turboFrameInit) {
 
             if (!turboFrames.length) return
 
-            if (linkElement) {
-                linkElement.remove();
-                scriptElement.remove();
-            } else {
+            if (this.enabled) {
                 const head = document.getElementsByTagName('head')[0]
                 const link = document.createElement('link')
                 link.rel = 'stylesheet'
@@ -32,11 +30,19 @@ if (!window.turboFrameInit) {
                 link.href = href;
                 head.appendChild(link);
 
-                var script = document.createElement('script');
-                script.src = src;
-                document.head.appendChild(script);
+                if (!scriptElement) {
+                    const script = document.createElement('script');
+                    script.src = src;
+                    document.head.appendChild(script);
+                }
+
+            }
+            else {
+                linkElement.remove();
             }
         }
+
+
     }
 
     window.turboFrameInit = new TurboFrameInit();
