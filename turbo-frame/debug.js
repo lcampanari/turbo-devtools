@@ -4,6 +4,7 @@ class TurboDebugLogger {
     constructor() {
         this.handleTurboClick = this.handleTurboClick.bind(this);
         this.handleTurboVisit = this.handleTurboVisit.bind(this);
+        this.handleTurboLoad = this.handleTurboLoad.bind(this);
         this.handleTurboBeforePrefetch = this.handleTurboBeforePrefetch.bind(this);
         this.handleTurboBeforeFetchRequest = this.handleTurboBeforeFetchRequest.bind(this);
         this.handleTurboBeforeStreamRender = this.handleTurboBeforeStreamRender.bind(this);
@@ -13,7 +14,8 @@ class TurboDebugLogger {
 
     setupEventListeners() {
         document.addEventListener('turbo:click', this.handleTurboClick);
-        document.addEventListener('turbo:visit', this.handleTurboVisit);        
+        document.addEventListener('turbo:visit', this.handleTurboVisit);
+        document.addEventListener('turbo:load', this.handleTurboLoad);
         document.addEventListener('turbo:before-prefetch', this.handleTurboBeforePrefetch);
         document.addEventListener('turbo:before-fetch-request', this.handleTurboBeforeFetchRequest);
         document.addEventListener('turbo:before-stream-render', this.handleTurboBeforeStreamRender);
@@ -21,6 +23,8 @@ class TurboDebugLogger {
 
     removeEventListeners() {
         document.removeEventListener('turbo:click', this.handleTurboClick);
+        document.removeEventListener('turbo:visit', this.handleTurboVisit);
+        document.removeEventListener('turbo:load', this.handleTurboLoad);
         document.removeEventListener('turbo:before-prefetch', this.handleTurboBeforePrefetch);
         document.removeEventListener('turbo:before-fetch-request', this.handleTurboBeforeFetchRequest);
         document.removeEventListener('turbo:before-stream-render', this.handleTurboBeforeStreamRender);
@@ -42,7 +46,7 @@ class TurboDebugLogger {
             const frameId = this.getFrameId(event.target);
             clickMessage = `replace the contents of #${frameId} with the contents of <turbo-frame id="${frameId}"></turbo-frame> returned from ${event.detail.url}`;
         }
-        this.logMessage(event, 
+        this.logMessage(event,
             `Link with text "${event.target.innerText}" click was intercepted. Turbo will`,
             clickMessage);
     }
@@ -50,6 +54,16 @@ class TurboDebugLogger {
     handleTurboVisit(event) {
         this.logMessage(event,
             `Navigating to ${event.detail.url} with action "${event.detail.action}".`);
+    }
+
+    handleTurboLoad(event) {
+        this.logMessage(event,
+            `Loaded page from ${event.detail.url}.`,
+            `\nVisit start: ${new Date(event.detail.timing.visitStart).toISOString()}`,
+            `\nRequest start: ${new Date(event.detail.timing.requestStart).toISOString()}`,
+            `\nRequest end: ${new Date(event.detail.timing.requestEnd).toISOString()}`,
+            `\nVisit end: ${new Date(event.detail.timing.visitEnd).toISOString()}`,
+        );
     }
 
     handleTurboBeforePrefetch(event) {
@@ -67,7 +81,7 @@ class TurboDebugLogger {
         openingTag += '>';
 
         this.logMessage(event,
-            `Triggered by ${openingTag}, executing ${event.detail.fetchOptions.method} against ${event.detail.url}`);
+            `Triggered by ${openingTag}, \nexecuting ${event.detail.fetchOptions.method} against ${event.detail.url}`);
     }
 
     handleTurboBeforeStreamRender(event) {
