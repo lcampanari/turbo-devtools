@@ -5,6 +5,7 @@ class TurboDebugLogger {
         this.handleTurboClick = this.handleTurboClick.bind(this);
         this.handleTurboVisit = this.handleTurboVisit.bind(this);
         this.handleTurboLoad = this.handleTurboLoad.bind(this);
+        this.handleTurboFrameRender = this.handleTurboFrameRender.bind(this);
         this.handleTurboBeforePrefetch = this.handleTurboBeforePrefetch.bind(this);
         this.handleTurboBeforeFetchRequest = this.handleTurboBeforeFetchRequest.bind(this);
         this.handleTurboBeforeStreamRender = this.handleTurboBeforeStreamRender.bind(this);
@@ -16,6 +17,7 @@ class TurboDebugLogger {
         document.addEventListener('turbo:click', this.handleTurboClick);
         document.addEventListener('turbo:visit', this.handleTurboVisit);
         document.addEventListener('turbo:load', this.handleTurboLoad);
+        document.addEventListener('turbo:frame-render', this.handleTurboFrameRender);
         document.addEventListener('turbo:before-prefetch', this.handleTurboBeforePrefetch);
         document.addEventListener('turbo:before-fetch-request', this.handleTurboBeforeFetchRequest);
         document.addEventListener('turbo:before-stream-render', this.handleTurboBeforeStreamRender);
@@ -25,6 +27,7 @@ class TurboDebugLogger {
         document.removeEventListener('turbo:click', this.handleTurboClick);
         document.removeEventListener('turbo:visit', this.handleTurboVisit);
         document.removeEventListener('turbo:load', this.handleTurboLoad);
+        document.removeEventListener('turbo:frame-render', this.handleTurboFrameRender);
         document.removeEventListener('turbo:before-prefetch', this.handleTurboBeforePrefetch);
         document.removeEventListener('turbo:before-fetch-request', this.handleTurboBeforeFetchRequest);
         document.removeEventListener('turbo:before-stream-render', this.handleTurboBeforeStreamRender);
@@ -63,6 +66,14 @@ class TurboDebugLogger {
             `\nRequest start: ${new Date(event.detail.timing.requestStart).toISOString()}`,
             `\nRequest end: ${new Date(event.detail.timing.requestEnd).toISOString()}`,
             `\nVisit end: ${new Date(event.detail.timing.visitEnd).toISOString()}`,
+        );
+    }
+
+    handleTurboFrameRender(event) {
+        const frameId = event.target.id;
+        this.logMessage(event,
+            `Rendered frame #${frameId} with the contents of the template received from`,
+            event.detail.fetchResponse.response.url
         );
     }
 
