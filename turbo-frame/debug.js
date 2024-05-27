@@ -3,6 +3,7 @@ class TurboDebugLogger {
 
     constructor() {
         this.handleTurboClick = this.handleTurboClick.bind(this);
+        this.handleTurboVisit = this.handleTurboVisit.bind(this);
         this.handleTurboBeforePrefetch = this.handleTurboBeforePrefetch.bind(this);
         this.handleTurboBeforeFetchRequest = this.handleTurboBeforeFetchRequest.bind(this);
         this.handleTurboBeforeStreamRender = this.handleTurboBeforeStreamRender.bind(this);
@@ -12,6 +13,7 @@ class TurboDebugLogger {
 
     setupEventListeners() {
         document.addEventListener('turbo:click', this.handleTurboClick);
+        document.addEventListener('turbo:visit', this.handleTurboVisit);        
         document.addEventListener('turbo:before-prefetch', this.handleTurboBeforePrefetch);
         document.addEventListener('turbo:before-fetch-request', this.handleTurboBeforeFetchRequest);
         document.addEventListener('turbo:before-stream-render', this.handleTurboBeforeStreamRender);
@@ -43,7 +45,11 @@ class TurboDebugLogger {
         this.logMessage(event, 
             `Link with text "${event.target.innerText}" click was intercepted. Turbo will`,
             clickMessage);
+    }
 
+    handleTurboVisit(event) {
+        this.logMessage(event,
+            `Navigating to ${event.detail.url} with action "${event.detail.action}".`);
     }
 
     handleTurboBeforePrefetch(event) {
