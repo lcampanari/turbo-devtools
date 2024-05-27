@@ -24,35 +24,55 @@ class TurboDebugLogger {
         document.removeEventListener('turbo:before-stream-render', this.handleTurboBeforeStreamRender);
     }
 
+    logMessage(event, ...messages) {
+        console.log(`%cTurbo`,
+            'font-weight: bold; color: lightgreen; border-radius: 3px; border: 1px solid lightgreen; display: inline-block;',
+            ...messages,
+            event);
+    }
+
     handleTurboClick(event) {
-        const frameId = this.getFrameId(event.target);
-        console.log(`%c${event.target.innerText}`,
-            'font-weight: bold; text-decoration: underline;',
-            'click was intercepted by Turbo which will',
-            `replace the contents of #${frameId} with the contents of <turbo-frame id="${frameId}"></turbo-frame> returned from ${event.detail.url}`,
-            event)
+        let clickMessage = '';
+        if (event.target.getAttribute('data-turbo-stream') == 'true') {
+            clickMessage = `act based on the contents of the turbo-stream returned from ${event.detail.url}`;
+        }
+        else {
+            const frameId = this.getFrameId(event.target);
+            clickMessage = `replace the contents of #${frameId} with the contents of <turbo-frame id="${frameId}"></turbo-frame> returned from ${event.detail.url}`;
+        }
+        this.logMessage(event, 
+            `Link with text "${event.target.innerText}" click was intercepted. Turbo will`,
+            clickMessage);
 
     }
 
     handleTurboBeforePrefetch(event) {
-        console.log(`%c${event.target.innerText}`,
-            'font-weight: bold; text-decoration: underline;',
-            'hover was intercepted by Turbo which will',
-            `prefetch.`,
-            event);
+        this.logMessage(event,
+            `Hover over link with text "${event.target.innerText}"  was intercepted. Turbo will prefetch.`);
     }
 
     handleTurboBeforeFetchRequest(event) {
-        console.log(`Turbo is fetching ${event.detail.url}`, event);
+        let openingTag = `<${event.target.localName}`;
+        Array.from(event.target.attributes).forEach(attr => {
+            if (attr.name.toLowerCase() !== 'class' && attr.name.toLowerCase() !== 'style') {
+                openingTag += ` ${attr.name}="${attr.value}"`;
+            }
+        });
+        openingTag += '>';
+
+        this.logMessage(event,
+            `Triggered by ${openingTag}, executing ${event.detail.fetchOptions.method} against ${event.detail.url}`);
     }
 
     handleTurboBeforeStreamRender(event) {
         let action = event.target.getAttribute('action');
         if (action == 'before' || action == 'after') {
-            console.log(`Turbo has received a stream of html that will insert the contents of the template received ${action} the contents of #${event.target.getAttribute('target')}`, event)
+            this.logMessage(event,
+                `Received a stream of HTML that will insert the contents of the template received ${action} the contents of #${event.target.getAttribute('target')}`);
         }
         else {
-            console.log(`Turbo has received a stream of html that will ${action} the contents of #${event.target.getAttribute('target')} with the contents of the template received`, event)
+            this.logMessage(event,
+                `Received a stream of HTML that will ${action} the contents of #${event.target.getAttribute('target')} with the contents of the template received`);
         }
 
     }
@@ -73,8 +93,7 @@ class TurboDebugLogger {
 
 }
 
-if (!window.turboDebugLogger)
-{
+if (!window.turboDebugLogger) {
     window.turboDebugLogger = new TurboDebugLogger();
     window.turboDebugLogger.setupEventListeners();
 }
