@@ -1,6 +1,5 @@
 turbo-frame, a[data-turbo-frame] {
   border: 1px darkred solid;
-  display: block;
 }
 
 turbo-frame::before {
